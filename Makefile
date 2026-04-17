@@ -2,7 +2,7 @@
 SCRIPTS := scripts
 
 .PHONY: help install setup prereqs glibc-runner claude update uninstall doctor \
-        all tmux termux-api dev-tools
+        all tmux termux-api dev-tools trigger-permissions claude-md
 
 help: ## Show this help
 	@printf 'claude-termux — Makefile targets\n\n'
@@ -40,5 +40,11 @@ tmux: ## Install tmux + drop configs/tmux.conf + claude-tmux helper
 termux-api: ## Install termux-api client (companion app must be sideloaded)
 	@$(SHELL) $(SCRIPTS)/install-termux-api.sh
 
+trigger-permissions: termux-api ## Run each termux-api command once to fire Android permission popups
+	@$(SHELL) $(SCRIPTS)/trigger-permissions.sh
+
 dev-tools: ## Install gh + openssh, configure git identity, generate ssh key
 	@$(SHELL) $(SCRIPTS)/install-dev-tools.sh
+
+claude-md: ## Install configs/CLAUDE.md to ~/.claude/CLAUDE.md (Termux profile memory)
+	@$(SHELL) $(SCRIPTS)/install-claude-md.sh

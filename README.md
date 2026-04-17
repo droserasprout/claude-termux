@@ -58,7 +58,9 @@ make claude         install Claude Code + wrap launcher with grun
 make update         re-run bootstrap; re-wrap launcher
 make tmux           install tmux + configs/tmux.conf + claude-tmux helper
 make termux-api     install termux-api client (companion app sideload needed)
+make trigger-permissions  fire every Android permission popup once
 make dev-tools      install gh + openssh, set git identity, generate ssh key
+make claude-md      drop a Termux-aware CLAUDE.md into ~/.claude/
 make doctor         diagnose the install
 make uninstall      remove Claude payload + repo state (keeps packages + auth)
 ```
@@ -77,6 +79,15 @@ All scripts are idempotent.
   sideloaded — the package we install is just the bridge. Once both are
   present, Claude can shell out to `termux-clipboard-{get,set}`,
   `termux-notification`, `termux-toast`, `termux-storage-get`, etc.
+- **`make trigger-permissions`** runs each `termux-*` API command once
+  so Android raises its grant dialogs (clipboard, notifications,
+  camera, location, Wi-Fi, telephony, contacts, SMS, call log). Tap
+  Allow on each; re-run to confirm (should be silent the second time).
+  Requires the Termux:API companion app.
+- **`make claude-md`** drops `configs/CLAUDE.md` to `~/.claude/CLAUDE.md`
+  — a Termux-aware profile that teaches Claude about `$PREFIX`, `grun`,
+  `termux-*` tools, the OOM killer, and why `~/.profile` matters on
+  this platform. Backs up any existing file before overwriting.
 - **`make dev-tools`** installs `gh` + `openssh`, sets `git user.name`
   and `user.email` (interactively, or via `GIT_USER_NAME` /
   `GIT_USER_EMAIL` env), and generates an ed25519 SSH key. It prints
