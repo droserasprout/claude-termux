@@ -66,21 +66,26 @@ EOF
 chmod +x "$LAUNCHER"
 
 # --- PATH hygiene -------------------------------------------------------
-case ":$PATH:" in
-    *":$HOME/.local/bin:"*) ;;
-    *)
-        log "adding ~/.local/bin to PATH in shell rc files"
-        for rc in "$HOME/.bashrc" "$HOME/.zshrc"; do
-            [ -f "$rc" ] || continue
-            grep -qF '.local/bin' "$rc" \
-                || printf '\nexport PATH="$HOME/.local/bin:$PATH"\n' >> "$rc"
-        done
-        ;;
-esac
+# Termux's default bash is a *login* shell, which reads ~/.bash_profile,
+# ~/.bash_login, or ~/.profile — NOT ~/.bashrc. So the PATH export has
+# to land somewhere the login shell sees. We write to ~/.profile
+# (creating it if absent) and to ~/.bashrc (for interactive `source`
+# and non-login subshells).
+log "ensuring ~/.local/bin is on PATH in shell init files"
+for rc in "$HOME/.profile" "$HOME/.bashrc" "$HOME/.zshrc"; do
+    # Only create .profile if it's missing — don't fabricate .bashrc /
+    # .zshrc for users who don't use those shells.
+    if [ ! -e "$rc" ]; then
+        [ "$rc" = "$HOME/.profile" ] || continue
+        : > "$rc"
+    fi
+    grep -qF '.local/bin' "$rc" \
+        || printf '\nexport PATH="$HOME/.local/bin:$PATH"\n' >> "$rc"
+done
 
 log "verifying"
 if "$LAUNCHER" --version; then
-    log "✅ claude ready — open a new shell or \`source ~/.bashrc\`, then run: claude"
+    log "✅ claude ready — open a new Termux session (or \`source ~/.profile\`), then run: claude"
 else
     die "claude --version failed — see output above"
 fi
