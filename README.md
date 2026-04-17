@@ -8,8 +8,8 @@ stock Termux). No npm workaround (dead as of late 2025).
 
 ## Status
 
-**Milestone 2 — Makefile + scripts.** Verified on OnePlus 6 (enchilada,
-LineageOS 15). tmux / termux-api / gh-ssh helpers land in M3.
+**Milestone 3 — tmux, termux-api, dev-tools.** Verified on OnePlus 6
+(enchilada, LineageOS 15).
 
 ## Why
 
@@ -48,18 +48,40 @@ claude             # interactive; first launch walks through auth
 
 ## Makefile targets
 
-```
+```text
 make help           list targets
-make install        prereqs + glibc-runner + Claude Code (full install)
+make install        prereqs + glibc-runner + Claude Code (core)
+make all            install + tmux + termux-api + dev-tools (everything)
 make prereqs        apt update/upgrade + curl/git/tur-repo
 make glibc-runner   install grun from termux-glibc
 make claude         install Claude Code + wrap launcher with grun
 make update         re-run bootstrap; re-wrap launcher
+make tmux           install tmux + configs/tmux.conf + claude-tmux helper
+make termux-api     install termux-api client (companion app sideload needed)
+make dev-tools      install gh + openssh, set git identity, generate ssh key
 make doctor         diagnose the install
 make uninstall      remove Claude payload + repo state (keeps packages + auth)
 ```
 
 All scripts are idempotent.
+
+### Extras
+
+- **`make tmux`** drops a minimal `~/.tmux.conf` (prefix `C-a`, compact
+  status bar) and installs a `claude-tmux` helper that attaches to (or
+  creates) a named tmux session before launching Claude and grabs
+  `termux-wake-lock`. Use it instead of bare `claude` to survive
+  Android's OOM killer.
+- **`make termux-api`** installs the CLI client. You also need the
+  [Termux:API companion app](https://f-droid.org/en/packages/com.termux.api/)
+  sideloaded — the package we install is just the bridge. Once both are
+  present, Claude can shell out to `termux-clipboard-{get,set}`,
+  `termux-notification`, `termux-toast`, `termux-storage-get`, etc.
+- **`make dev-tools`** installs `gh` + `openssh`, sets `git user.name`
+  and `user.email` (interactively, or via `GIT_USER_NAME` /
+  `GIT_USER_EMAIL` env), and generates an ed25519 SSH key. It prints
+  the pubkey and the `gh ssh-key add` command — you still have to run
+  `gh auth login` yourself.
 
 ## How it works
 

@@ -1,7 +1,8 @@
 # Default SHELL (/bin/sh) works on Termux via termux-exec path rewriting.
 SCRIPTS := scripts
 
-.PHONY: help install setup prereqs glibc-runner claude update uninstall doctor
+.PHONY: help install setup prereqs glibc-runner claude update uninstall doctor \
+        all tmux termux-api dev-tools
 
 help: ## Show this help
 	@printf 'claude-termux — Makefile targets\n\n'
@@ -12,6 +13,8 @@ help: ## Show this help
 install: prereqs glibc-runner claude ## Full install: prereqs + glibc-runner + Claude Code
 
 setup: install ## Alias for `install`
+
+all: install tmux termux-api dev-tools ## Everything: install + tmux + termux-api + dev-tools
 
 prereqs: ## apt update + full-upgrade, install curl/git/tur-repo
 	@$(SHELL) $(SCRIPTS)/install-prereqs.sh
@@ -30,3 +33,12 @@ uninstall: ## Remove Claude payload + this repo's state (keeps packages, auth)
 
 doctor: ## Diagnose the install
 	@$(SHELL) $(SCRIPTS)/doctor.sh
+
+tmux: ## Install tmux + drop configs/tmux.conf + claude-tmux helper
+	@$(SHELL) $(SCRIPTS)/install-tmux.sh
+
+termux-api: ## Install termux-api client (companion app must be sideloaded)
+	@$(SHELL) $(SCRIPTS)/install-termux-api.sh
+
+dev-tools: ## Install gh + openssh, configure git identity, generate ssh key
+	@$(SHELL) $(SCRIPTS)/install-dev-tools.sh
