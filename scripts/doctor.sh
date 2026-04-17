@@ -27,8 +27,10 @@ check "curl"              command -v curl
 check "git"               command -v git
 check "grun"              command -v grun
 check "launcher exists"   test -f "$LAUNCHER"
-check "launcher is wrap"  sh -c "head -n1 '$LAUNCHER' | grep -q '^#!'"
-check "real binary"       sh -c 'test -x "$(cat "'"$LAUNCHER_BACKUP"'" 2>/dev/null)"'
+launcher_is_wrap() { [ -f "$LAUNCHER" ] && head -n1 "$LAUNCHER" | grep -q '^#!'; }
+real_binary_ok()   { real="$(cat "$LAUNCHER_BACKUP" 2>/dev/null)" && [ -x "$real" ]; }
+check "launcher is wrap"  launcher_is_wrap
+check "real binary"       real_binary_ok
 
 log "runtime"
 if [ -x "$LAUNCHER" ]; then

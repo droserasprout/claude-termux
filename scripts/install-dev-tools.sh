@@ -61,6 +61,7 @@ printf '\n'
 cat "$KEY.pub"
 printf '\n'
 
-log "to add via gh:  gh ssh-key add $KEY.pub --title enchilada"
+SSH_TITLE="$(hostname 2>/dev/null || echo termux)"
+log "to add via gh:  gh ssh-key add $KEY.pub --title $SSH_TITLE"
 log "to auth gh:     gh auth login    (opens browser or device code)"
 log "done"

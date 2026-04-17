@@ -1,7 +1,7 @@
 #!/data/data/com.termux/files/usr/bin/sh
-# Install tmux + drop the repo's tmux.conf. Adds a `claude` shell alias
-# that attaches to (or creates) a named tmux session before launching
-# Claude Code — so an OOM-killed Termux doesn't lose the Claude session.
+# Install tmux + drop the repo's tmux.conf. Also installs a `claude-tmux`
+# helper that attaches to (or creates) a named tmux session before
+# launching Claude Code — so an OOM-killed Termux doesn't lose it.
 set -eu
 TAG=tmux
 . "$(dirname "$0")/_lib.sh"

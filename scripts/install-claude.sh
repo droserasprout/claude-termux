@@ -38,7 +38,7 @@ bash "$BOOTSTRAP_PATCHED"
 log "locating installed claude binary"
 if [ -L "$LAUNCHER" ]; then
     REAL_BIN="$(readlink -f "$LAUNCHER")"
-elif [ -f "$LAUNCHER" ] && head -c4 "$LAUNCHER" | grep -q ELF; then
+elif [ -f "$LAUNCHER" ] && [ "$(od -An -N4 -c "$LAUNCHER" | tr -d ' ')" = "177ELF" ]; then
     # Already a binary copy (some layouts); use it as-is as the "real".
     REAL_BIN="$LAUNCHER.real"
     mv -f "$LAUNCHER" "$REAL_BIN"
