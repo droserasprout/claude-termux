@@ -3,17 +3,24 @@
 Claude Code is running inside **Termux on Android** via `glibc-runner`.
 The host is a single-user Android app sandbox, not a normal Linux box.
 
+## Device
+
+- Android: {{ANDROID_VERSION}}
+- ROM: {{ROM}}
+- Model: {{MODEL}}
+
 ## Paths
 
 - `$PREFIX` = `/data/data/com.termux/files/usr` — all packages live here
 - `$HOME`   = `/data/data/com.termux/files/home`
-- `$TMPDIR` = `$PREFIX/tmp` (no `/tmp`)
+- `$TMPDIR` = `$PREFIX/tmp` (no `/tmp`); use `$TMPDIR/claude-termux/` for scratch
 - `~/.local/bin/claude` is a shell wrapper around `grun <native-binary>`
 - `/sdcard` is the phone's shared storage; write here to share with other apps
 
 ## Constraints
 
-- No `sudo`, no `systemd`, no root. Nothing runs as uid 0.
+- Termux runs as an Android app sandbox (uid ≥ 10000). No `sudo`, no `systemd`.
+- The host Android may be rooted — `command -v su` tells you. Don't assume.
 - No `/etc`, `/var`, `/usr/bin` in the normal places — paths are under `$PREFIX`.
 - Port < 1024 is unusable. Use 1025+.
 - The default login shell is bash; `~/.profile` is read (not `~/.bashrc`).
@@ -71,3 +78,6 @@ was denied or the companion app is missing.
   `claude-tmux` helper attaches to a persistent session)
 - When suggesting edits to shell init, write to `~/.profile`, not
   `~/.bashrc` — Termux's default bash is a login shell
+- Scratch files go under `$TMPDIR/claude-termux/` (create with `mkdir -p` on
+  first use). Don't dump into `$TMPDIR` directly — it's shared with Termux
+  itself and other tools.

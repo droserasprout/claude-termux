@@ -1,25 +1,28 @@
 # Default SHELL (/bin/sh) works on Termux via termux-exec path rewriting.
 SCRIPTS := scripts
 
-.PHONY: help install setup prereqs glibc-runner claude update uninstall doctor \
-        all tmux termux-api dev-tools trigger-permissions claude-md
+.PHONY: help install setup all \
+        prereqs glibc-runner claude update uninstall doctor \
+        tmux termux-api trigger-permissions dev-tools claude-md
+
+##@ Meta
 
 help: ## Show this help
-	@printf 'claude-termux — Makefile targets\n\n'
-	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z][a-zA-Z0-9_-]*:.*##/ \
-		{ printf "  \033[1;36m%-16s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
-	@printf '\n'
+	@awk 'BEGIN {FS = ":.*##"} \
+		/^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5); next } \
+		/^[a-zA-Z][a-zA-Z0-9_-]*:.*##/ { printf "  \033[1;36m%-20s\033[0m %s\n", $$1, $$2 }' \
+		$(MAKEFILE_LIST)
 
-install: prereqs glibc-runner claude ## Full install: prereqs + glibc-runner + Claude Code
-
+install: prereqs glibc-runner claude ## Core install: prereqs + grun + Claude Code
 setup: install ## Alias for `install`
+all: install tmux termux-api dev-tools ## Everything: core + extras
 
-all: install tmux termux-api dev-tools ## Everything: install + tmux + termux-api + dev-tools
+##@ Core
 
 prereqs: ## apt update + full-upgrade, install curl/git/tur-repo
 	@$(SHELL) $(SCRIPTS)/install-prereqs.sh
 
-glibc-runner: ## Install glibc-runner (grun) from termux-glibc repo
+glibc-runner: ## Install glibc-runner (grun) from termux-glibc
 	@$(SHELL) $(SCRIPTS)/install-glibc-runner.sh
 
 claude: ## Install Claude Code and wrap its launcher with grun
@@ -28,19 +31,21 @@ claude: ## Install Claude Code and wrap its launcher with grun
 update: ## Re-run bootstrap to update Claude Code; re-wrap launcher
 	@$(SHELL) $(SCRIPTS)/update-claude.sh
 
-uninstall: ## Remove Claude payload + this repo's state (keeps packages, auth)
+uninstall: ## Remove Claude payload + repo state (keeps packages, auth)
 	@$(SHELL) $(SCRIPTS)/uninstall-claude.sh
 
 doctor: ## Diagnose the install
 	@$(SHELL) $(SCRIPTS)/doctor.sh
 
-tmux: ## Install tmux + drop configs/tmux.conf + claude-tmux helper
+##@ Extras
+
+tmux: ## Install tmux + configs/tmux.conf + claude-tmux helper
 	@$(SHELL) $(SCRIPTS)/install-tmux.sh
 
 termux-api: ## Install termux-api client (companion app must be sideloaded)
 	@$(SHELL) $(SCRIPTS)/install-termux-api.sh
 
-trigger-permissions: termux-api ## Run each termux-api command once to fire Android permission popups
+trigger-permissions: termux-api ## Fire every Android permission popup once
 	@$(SHELL) $(SCRIPTS)/trigger-permissions.sh
 
 dev-tools: ## Install gh + openssh, configure git identity, generate ssh key
