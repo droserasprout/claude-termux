@@ -39,7 +39,7 @@ cd ~/claude-termux
 make install
 ```
 
-Open a new shell (or `source ~/.bashrc`), then:
+Open a new shell (or `source ~/.profile`), then:
 
 ```sh
 claude --version   # → 2.1.113 (Claude Code)
@@ -51,7 +51,7 @@ claude             # interactive; first launch walks through auth
 ```text
 make help           list targets
 make install        prereqs + glibc-runner + Claude Code (core)
-make all            install + tmux + termux-api + dev-tools (everything)
+make all            install + tmux + termux-api + dev-tools + claude-md
 make prereqs        apt update/upgrade + curl/git/tur-repo
 make glibc-runner   install grun from termux-glibc
 make claude         install Claude Code + wrap launcher with grun
@@ -124,7 +124,7 @@ All scripts are idempotent.
 ## Troubleshooting
 
 - `grun: command not found` → `make glibc-runner`.
-- `claude: command not found` → `source ~/.bashrc` (or open a new
+- `claude: command not found` → `source ~/.profile` (or open a new
   shell) so `~/.local/bin` is on `PATH`.
 - Linker errors on launch → `make doctor` for a full diagnostic; open
   an issue with its output plus `grun --version`.

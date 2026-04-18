@@ -25,8 +25,7 @@ fi
 log "installing ~/.tmux.conf"
 cp "$SRC" "$DST"
 
-# Add a `claude` shell wrapper that re-attaches to a tmux session.
-# The wrapper is in ~/.local/bin — PATH is already set by install-claude.
+# ~/.local/bin is PATH'd by install-claude.sh; this just drops a helper there.
 WRAPPER="$HOME/.local/bin/claude-tmux"
 log "installing claude-tmux helper at $WRAPPER"
 cat > "$WRAPPER" <<'EOF'

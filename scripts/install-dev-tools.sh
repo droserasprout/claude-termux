@@ -16,34 +16,24 @@ log "installing gh, openssh"
 $APT_GET install gh openssh
 
 # --- git identity -------------------------------------------------------
-cur_name="$(git config --global user.name  2>/dev/null || true)"
-cur_email="$(git config --global user.email 2>/dev/null || true)"
-
-if [ -z "$cur_name" ]; then
-    if [ -n "${GIT_USER_NAME:-}" ]; then
-        git config --global user.name "$GIT_USER_NAME"
+# $1 = git config key, $2 = override value (may be empty), $3 = prompt label
+set_git_identity() {
+    key="$1"; override="$2"; label="$3"
+    cur="$(git config --global "$key" 2>/dev/null || true)"
+    if [ -n "$cur" ]; then
+        log "git $key already set: $cur"
+    elif [ -n "$override" ]; then
+        git config --global "$key" "$override"
     elif [ -t 0 ]; then
-        printf 'git user.name: '; read -r name
-        [ -n "$name" ] && git config --global user.name "$name"
+        printf 'git %s: ' "$label"; read -r val
+        [ -n "$val" ] && git config --global "$key" "$val"
     else
-        warn "git user.name not set and stdin is not a tty — skipping"
+        warn "git $key not set and stdin is not a tty — skipping"
     fi
-else
-    log "git user.name already set: $cur_name"
-fi
+}
 
-if [ -z "$cur_email" ]; then
-    if [ -n "${GIT_USER_EMAIL:-}" ]; then
-        git config --global user.email "$GIT_USER_EMAIL"
-    elif [ -t 0 ]; then
-        printf 'git user.email: '; read -r email
-        [ -n "$email" ] && git config --global user.email "$email"
-    else
-        warn "git user.email not set and stdin is not a tty — skipping"
-    fi
-else
-    log "git user.email already set: $cur_email"
-fi
+set_git_identity user.name  "${GIT_USER_NAME:-}"  user.name
+set_git_identity user.email "${GIT_USER_EMAIL:-}" user.email
 
 # --- ssh key ------------------------------------------------------------
 KEY="$HOME/.ssh/id_ed25519"

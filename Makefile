@@ -15,7 +15,7 @@ help: ## Show this help
 
 install: prereqs glibc-runner claude ## Core install: prereqs + grun + Claude Code
 setup: install ## Alias for `install`
-all: install tmux termux-api dev-tools ## Everything: core + extras
+all: install tmux termux-api dev-tools claude-md ## Everything: core + extras
 
 ##@ Core
 
